@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quranic Verse Keeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lateef:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #b8972a;
+    --gold-light: #e8d5a0;
+    --dark-bg: #0d1117;
+    --card-bg: #131920;
+    --card-border: #1e2d3d;
+    --text-primary: #f0ede8;
+    --text-secondary: #8a9ab0;
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.55; }
+  }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50%       { opacity: 1; }
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #b8972a44; border-radius: 4px; }
+
+  /* ─── Stars ─── */
+  #stars {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--gold-light);
+    animation: twinkle 3s ease-in-out infinite;
+  }
+
+  /* ─── Glow orbs ─── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.11;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #orb1 { width: 520px; height: 520px; top: -160px; left: -120px; background: #b8972a; }
+  #orb2 { width: 420px; height: 420px; bottom: 60px;  right: -100px; background: #2a4a8a; }
+
+  /* ─── Islamic pattern overlay ─── */
+  #pattern {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    opacity: 0.03;
+  }
+
+  /* ─── Page wrapper ─── */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 6rem;
+    animation: fadeSlideIn 0.8s ease both;
+  }
+
+  /* ─── Header ─── */
+  #header { text-align: center; margin-bottom: 3.5rem; }
+  #bismillah {
+    font-family: 'Amiri', 'Lateef', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--gold);
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+  }
+  .gold-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #b8972a55, transparent);
+    max-width: 400px;
+    margin: 1rem auto;
+  }
+  #site-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    color: var(--text-primary);
+    letter-spacing: 0.12em;
+  }
+  #site-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-top: 0.5rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Input card ─── */
+  #input-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeSlideIn 0.9s ease 0.1s both;
+  }
+  #input-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, #b8972a66, transparent);
+  }
+  #input-label {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  #verse-input {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    color: var(--text-primary);
+    font-family: 'Amiri', 'Lateef', serif;
+    font-size: 1.4rem;
+    line-height: 2;
+    resize: vertical;
+    outline: none;
+    direction: rtl;
+    text-align: right;
+    transition: border-color 0.2s;
+    caret-color: var(--gold);
+    min-height: 110px;
+  }
+  #verse-input:focus { border-color: #b8972a66; }
+  #verse-input::placeholder { color: var(--text-secondary); font-size: 1.1rem; }
+  #error-msg {
+    color: #e06060;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: none;
+  }
+  #btn-row { display: flex; justify-content: flex-end; margin-top: 1rem; }
+  #add-btn {
+    background: var(--gold);
+    color: #0d1117;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 32px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #add-btn:hover { background: var(--gold-light); }
+  #add-btn:disabled { background: #b8972a66; cursor: not-allowed; }
+
+  /* ─── Section label ─── */
+  .section-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label.gold { color: var(--gold); }
+  .section-label.muted { color: var(--text-secondary); }
+  .pulse-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+  .section-label span {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: none;
+  }
+
+  /* ─── Verse card ─── */
+  .verse-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 1.8rem 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+    margin-bottom: 1.2rem;
+    animation: fadeSlideIn 0.5s ease both;
+  }
+  .verse-card.recent { border-color: #b8972a55; }
+  .verse-card:hover { border-color: #b8972a88; transform: translateY(-2px); }
+  .card-glow {
+    position: absolute; top: 0; right: 0;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle at top right, #b8972a12, transparent 70%);
+    pointer-events: none;
+  }
+  .arabic-text {
+    font-family: 'Amiri', 'Lateef', serif;
+    font-size: 1.7rem;
+    line-height: 2.2;
+    color: var(--text-primary);
+    text-align: right;
+    direction: rtl;
+    letter-spacing: 0.02em;
+  }
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0.7rem 0;
+  }
+  .divider-line {
+    flex: 1; height: 0.5px;
+  }
+  .divider-line.l { background: linear-gradient(to right, transparent, #b8972a44); }
+  .divider-line.r { background: linear-gradient(to left,  transparent, #b8972a44); }
+  .divider-gem { color: var(--gold); font-size: 13px; opacity: 0.6; }
+
+  .lang-btns { display: flex; gap: 10px; margin-top: 0.8rem; flex-wrap: wrap; }
+  .lang-btn {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid #b8972a66;
+    border-radius: 8px;
+    padding: 6px 18px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--gold); color: #0d1117; font-weight: 600; }
+  .lang-btn:hover:not(.active) { background: #b8972a18; }
+
+  .translation-area { margin-top: 1.2rem; }
+  .translating-msg {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .translation-text {
+    font-size: 1.15rem;
+    line-height: 1.9;
+    color: var(--gold-light);
+    font-style: italic;
+    border-left: 2px solid #b8972a55;
+    padding-left: 14px;
+  }
+  .translation-text.urdu {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: 1.3rem;
+    line-height: 2.4;
+    text-align: right;
+    direction: rtl;
+    font-style: normal;
+    border-left: none;
+    border-right: 2px solid #b8972a55;
+    padding-left: 0;
+    padding-right: 14px;
+  }
+  .card-time {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── Random box ─── */
+  #random-section { margin-bottom: 2rem; }
+  #random-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed #b8972a55;
+    border-radius: 16px;
+    padding: 2.2rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  #random-btn:hover {
+    border-color: #b8972a99;
+    background: #b8972a08;
+  }
+  .random-icon { color: var(--gold); font-size: 2rem; margin-bottom: 0.4rem; }
+  .random-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    color: var(--gold-light);
+    font-style: italic;
+    margin-bottom: 0.3rem;
+  }
+  .random-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Empty state ─── */
+  #empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    animation: fadeSlideIn 1s ease 0.3s both;
+  }
+  .empty-icon { font-size: 2.5rem; opacity: 0.3; margin-bottom: 1rem; }
+  .empty-text {
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  /* ─── Modal ─── */
+  #modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  #modal-overlay.open { display: flex; }
+  #modal-box {
+    max-width: 620px; width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    border: 1px solid #b8972a44;
+    background: var(--card-bg);
+    padding: 2.5rem;
+    position: relative;
+    animation: modalIn 0.3s ease both;
+  }
+  #modal-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none;
+    color: var(--text-secondary);
+    font-size: 22px; cursor: pointer; line-height: 1;
+  }
+  #modal-close:hover { color: var(--text-primary); }
+  #modal-label {
+    color: var(--gold);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div id="stars"></div>
+<div class="orb" id="orb1"></div>
+<div class="orb" id="orb2"></div>
+<svg id="pattern" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="islamic-pat" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <polygon points="30,2 58,15 58,45 30,58 2,45 2,15" fill="none" stroke="#b8972a" stroke-width="0.5"/>
+      <polygon points="30,12 48,20 48,40 30,48 12,40 12,20" fill="none" stroke="#b8972a" stroke-width="0.3"/>
+      <circle cx="30" cy="30" r="4" fill="none" stroke="#b8972a" stroke-width="0.4"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#islamic-pat)"/>
+</svg>
+
+<!-- App -->
+<div id="app">
+
+  <!-- Header -->
+  <div id="header">
+    <div id="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+    <div class="gold-line"></div>
+    <h1 id="site-title">Quranic Verse Keeper</h1>
+    <p id="site-sub">Preserve the words of Allah. Seek their meaning.</p>
+  </div>
+
+  <!-- Input Card -->
+  <div id="input-card">
+    <label id="input-label" for="verse-input">✦ &nbsp; Paste a Quranic Verse &nbsp; ✦</label>
+    <textarea id="verse-input" rows="4"
+      placeholder="اكْتُبْ آيةً قرآنيةً هنا…   ·   paste the Arabic verse here"></textarea>
+    <p id="error-msg"></p>
+    <div id="btn-row">
+      <button id="add-btn" onclick="addVerse()">Add Verse →</button>
+    </div>
+  </div>
+
+  <!-- Recent verses -->
+  <div id="recent-section" style="display:none; margin-bottom:3rem;">
+    <div class="section-label gold">
+      <div class="pulse-dot"></div>
+      Recently Added
+      <span>· visible for 7 minutes</span>
+    </div>
+    <div id="recent-list"></div>
+  </div>
+
+  <!-- Random box -->
+  <div id="random-section" style="display:none;">
+    <div class="section-label muted">Your Verse Collection</div>
+    <button id="random-btn" onclick="openRandom()">
+      <div class="random-icon">☽</div>
+      <div class="random-title">Reveal a Random Verse</div>
+      <div class="random-count" id="random-count"></div>
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div id="empty-state">
+    <div class="empty-icon">☽</div>
+    <p class="empty-text">Your collection is empty.<br>Add a Quranic verse above to begin.</p>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-box">
+    <button id="modal-close" onclick="closeModalBtn()">✕</button>
+    <div id="modal-label">✦ &nbsp; A VERSE FOR YOU &nbsp; ✦</div>
+    <div id="modal-card-container"></div>
+  </div>
+</div>
+
+<script>
+  /* ── State ── */
+  const entries = [];   // { id, verse, addedAt }
+
+  /* ── Stars ── */
+  (function buildStars() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 44; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2 + 0.5;
+      s.style.cssText = `
+        left:${Math.random()*100}%;
+        top:${Math.random()*100}%;
+        width:${size}px; height:${size}px;
+        opacity:${Math.random()*0.5+0.1};
+        animation-delay:${Math.random()*4}s;
+        animation-duration:${2.5+Math.random()*2}s;
+      `;
+      container.appendChild(s);
+    }
+  })();
+
+  /* ── Translation via MyMemory (free, no API key, works on GitHub Pages) ── */
+  async function translateVerse(verse, language) {
+    // MyMemory API: free, no signup, no key required
+    // Supports ar→en and ar→ur out of the box
+    const targetLang = language === 'urdu' ? 'ur' : 'en';
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(verse)}&langpair=ar|${targetLang}`;
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      // responseStatus 200 = success; 429 = daily limit hit
+      if (data.responseStatus === 429) {
+        return '⚠️ Daily translation limit reached. Please try again tomorrow.';
+      }
+      if (data.responseStatus !== 200) {
+        return `⚠️ Translation error: ${data.responseDetails || 'Unknown error'}`;
+      }
+
+      const text = data.responseData?.translatedText?.trim();
+      return text || 'Translation unavailable.';
+    } catch (e) {
+      return `⚠️ Network error: ${e.message}`;
+    }
+  }
+
+  /* ── Build a verse card DOM element ── */
+  function buildCard(entry, isRecent) {
+    const card = document.createElement('div');
+    card.className = 'verse-card' + (isRecent ? ' recent' : '');
+    card.dataset.id = entry.id;
+
+    const time = new Date(entry.addedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    card.innerHTML = `
+      <div class="card-glow"></div>
+      <p class="arabic-text">${escHtml(entry.verse)}</p>
+      <div class="divider">
+        <div class="divider-line l"></div>
+        <div class="divider-gem">✦</div>
+        <div class="divider-line r"></div>
+      </div>
+      <div class="lang-btns">
+        <button class="lang-btn" data-lang="english">English</button>
+        <button class="lang-btn" data-lang="urdu">اردو</button>
+      </div>
+      <div class="translation-area" style="display:none;"></div>
+      <div class="card-time">${time}</div>
+    `;
+
+    let activeLang = null;
+
+    card.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const lang = btn.dataset.lang;
+
+        if (activeLang === lang) {
+          activeLang = null;
+          card.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+          card.querySelector('.translation-area').style.display = 'none';
+          card.querySelector('.translation-area').innerHTML = '';
+          return;
+        }
+
+        activeLang = lang;
+        card.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const area = card.querySelector('.translation-area');
+        area.style.display = 'block';
+        area.innerHTML = '<p class="translating-msg">Translating…</p>';
+
+        const text = await translateVerse(entry.verse, lang);
+        const cls = lang === 'urdu' ? 'translation-text urdu' : 'translation-text';
+        area.innerHTML = `<p class="${cls}">${escHtml(text)}</p>`;
+      });
+    });
+
+    return card;
+  }
+
+  /* ── Add verse ── */
+  function addVerse() {
+    const input = document.getElementById('verse-input');
+    const errorEl = document.getElementById('error-msg');
+    const verse = input.value.trim();
+
+    if (!verse) {
+      errorEl.textContent = 'Please paste a Quranic verse first.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    errorEl.style.display = 'none';
+
+    const entry = { id: Date.now(), verse, addedAt: Date.now() };
+    entries.push(entry);
+    input.value = '';
+    renderAll();
+  }
+
+  /* ── Render everything ── */
+  function renderAll() {
+    const now = Date.now();
+    const recent  = entries.filter(e => now - e.addedAt <  7 * 60 * 1000);
+    const archive = entries.filter(e => now - e.addedAt >= 7 * 60 * 1000);
+
+    // Empty state
+    document.getElementById('empty-state').style.display = entries.length === 0 ? 'block' : 'none';
+
+    // Recent section
+    const recentSection = document.getElementById('recent-section');
+    const recentList = document.getElementById('recent-list');
+    if (recent.length > 0) {
+      recentSection.style.display = 'block';
+      recentList.innerHTML = '';
+      [...recent].reverse().forEach(e => recentList.appendChild(buildCard(e, true)));
+    } else {
+      recentSection.style.display = 'none';
+    }
+
+    // Random button
+    const all = entries;
+    const randomSection = document.getElementById('random-section');
+    if (all.length > 0) {
+      randomSection.style.display = 'block';
+      const count = all.length;
+      document.getElementById('random-count').textContent =
+        `${count} verse${count !== 1 ? 's' : ''} in your collection · click to open one`;
+    } else {
+      randomSection.style.display = 'none';
+    }
+  }
+
+  /* ── Periodic re-render to move recent → archive ── */
+  setInterval(renderAll, 15000);
+
+  /* ── Random modal ── */
+  function openRandom() {
+    if (entries.length === 0) return;
+    const entry = entries[Math.floor(Math.random() * entries.length)];
+    const container = document.getElementById('modal-card-container');
+    container.innerHTML = '';
+    container.appendChild(buildCard(entry, false));
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModalBtn();
+  }
+  function closeModalBtn() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+
+  /* ── Helpers ── */
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
