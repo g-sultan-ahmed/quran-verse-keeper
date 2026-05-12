@@ -44,13 +44,14 @@
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to   { opacity: 1; transform: scale(1) translateY(0); }
   }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-  /* ─── Scrollbar ─── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #b8972a44; border-radius: 4px; }
 
-  /* ─── Stars ─── */
   #stars {
     position: fixed; inset: 0;
     pointer-events: none; z-index: 0;
@@ -63,7 +64,6 @@
     animation: twinkle 3s ease-in-out infinite;
   }
 
-  /* ─── Glow orbs ─── */
   .orb {
     position: fixed;
     border-radius: 50%;
@@ -73,16 +73,14 @@
     z-index: 0;
   }
   #orb1 { width: 520px; height: 520px; top: -160px; left: -120px; background: #b8972a; }
-  #orb2 { width: 420px; height: 420px; bottom: 60px;  right: -100px; background: #2a4a8a; }
+  #orb2 { width: 420px; height: 420px; bottom: 60px; right: -100px; background: #2a4a8a; }
 
-  /* ─── Islamic pattern overlay ─── */
   #pattern {
     position: fixed; inset: 0;
     pointer-events: none; z-index: 0;
     opacity: 0.03;
   }
 
-  /* ─── Page wrapper ─── */
   #app {
     position: relative; z-index: 1;
     max-width: 760px;
@@ -91,7 +89,6 @@
     animation: fadeSlideIn 0.8s ease both;
   }
 
-  /* ─── Header ─── */
   #header { text-align: center; margin-bottom: 3.5rem; }
   #bismillah {
     font-family: 'Amiri', 'Lateef', serif;
@@ -122,7 +119,26 @@
     letter-spacing: 0.06em;
   }
 
-  /* ─── Input card ─── */
+  /* Storage status indicator */
+  #storage-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0.8rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    font-family: 'Cormorant Garamond', serif;
+  }
+  #storage-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #888;
+    transition: background 0.4s;
+  }
+  #storage-dot.ok { background: #4caf7d; }
+  #storage-dot.err { background: #e06060; }
+
   #input-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -191,7 +207,6 @@
   #add-btn:hover { background: var(--gold-light); }
   #add-btn:disabled { background: #b8972a66; cursor: not-allowed; }
 
-  /* ─── Section label ─── */
   .section-label {
     font-family: 'Cormorant Garamond', serif;
     font-size: 0.8rem;
@@ -218,7 +233,6 @@
     text-transform: none;
   }
 
-  /* ─── Verse card ─── */
   .verse-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -251,9 +265,7 @@
     display: flex; align-items: center; gap: 12px;
     margin: 0.7rem 0;
   }
-  .divider-line {
-    flex: 1; height: 0.5px;
-  }
+  .divider-line { flex: 1; height: 0.5px; }
   .divider-line.l { background: linear-gradient(to right, transparent, #b8972a44); }
   .divider-line.r { background: linear-gradient(to left,  transparent, #b8972a44); }
   .divider-gem { color: var(--gold); font-size: 13px; opacity: 0.6; }
@@ -270,15 +282,33 @@
     letter-spacing: 0.05em;
     cursor: pointer;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   .lang-btn.active { background: var(--gold); color: #0d1117; font-weight: 600; }
   .lang-btn:hover:not(.active) { background: #b8972a18; }
+  .lang-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .translation-area { margin-top: 1.2rem; }
   .translating-msg {
     color: var(--text-secondary);
     font-style: italic;
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid #b8972a44;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
   }
   .translation-text {
     font-size: 1.15rem;
@@ -307,7 +337,6 @@
     letter-spacing: 0.08em;
   }
 
-  /* ─── Random box ─── */
   #random-section { margin-bottom: 2rem; }
   #random-btn {
     width: 100%;
@@ -318,6 +347,8 @@
     cursor: pointer;
     text-align: center;
     transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   #random-btn:hover {
     border-color: #b8972a99;
@@ -338,7 +369,6 @@
     letter-spacing: 0.06em;
   }
 
-  /* ─── Empty state ─── */
   #empty-state {
     text-align: center;
     padding: 3rem 1rem;
@@ -352,7 +382,6 @@
     line-height: 1.8;
   }
 
-  /* ─── Modal ─── */
   #modal-overlay {
     display: none;
     position: fixed; inset: 0; z-index: 100;
@@ -361,24 +390,26 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    overflow-y: auto;
   }
   #modal-overlay.open { display: flex; }
   #modal-box {
     max-width: 620px; width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
     border-radius: 20px;
     border: 1px solid #b8972a44;
     background: var(--card-bg);
     padding: 2.5rem;
     position: relative;
     animation: modalIn 0.3s ease both;
+    margin: auto;
   }
   #modal-close {
     position: absolute; top: 14px; right: 16px;
     background: none; border: none;
     color: var(--text-secondary);
     font-size: 22px; cursor: pointer; line-height: 1;
+    padding: 6px;
+    -webkit-tap-highlight-color: transparent;
   }
   #modal-close:hover { color: var(--text-primary); }
   #modal-label {
@@ -387,9 +418,43 @@
     letter-spacing: 0.2em;
     margin-bottom: 1.5rem;
   }
+
+  /* Loading overlay for initial storage fetch */
+  #loading-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: var(--dark-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    transition: opacity 0.5s;
+  }
+  #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+  .loading-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+  }
+  .loading-spinner {
+    width: 32px; height: 32px;
+    border: 2px solid #b8972a33;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
 </style>
 </head>
 <body>
+
+<!-- Loading overlay while fetching from storage -->
+<div id="loading-overlay">
+  <div style="font-family:'Amiri',serif;font-size:1.6rem;color:var(--gold);">بِسْمِ اللَّهِ</div>
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading your collection…</div>
+</div>
 
 <!-- Background layers -->
 <div id="stars"></div>
@@ -406,18 +471,18 @@
   <rect width="100%" height="100%" fill="url(#islamic-pat)"/>
 </svg>
 
-<!-- App -->
 <div id="app">
-
-  <!-- Header -->
   <div id="header">
     <div id="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
     <div class="gold-line"></div>
     <h1 id="site-title">Quranic Verse Keeper</h1>
     <p id="site-sub">Vault for the words of Allah. Understand their meaning.</p>
+    <div id="storage-status">
+      <div id="storage-dot"></div>
+      <span id="storage-label">Connecting…</span>
+    </div>
   </div>
 
-  <!-- Input Card -->
   <div id="input-card">
     <label id="input-label" for="verse-input">✦ &nbsp; Paste a Quranic Verse &nbsp; ✦</label>
     <textarea id="verse-input" rows="4"
@@ -428,7 +493,6 @@
     </div>
   </div>
 
-  <!-- Recent verses -->
   <div id="recent-section" style="display:none; margin-bottom:3rem;">
     <div class="section-label gold">
       <div class="pulse-dot"></div>
@@ -438,9 +502,8 @@
     <div id="recent-list"></div>
   </div>
 
-  <!-- Random box -->
   <div id="random-section" style="display:none;">
-    <div class="section-label muted">Your Verse Collection</div>
+    <div class="section-label muted">Shared Verse Collection</div>
     <button id="random-btn" onclick="openRandom()">
       <div class="random-icon">☽</div>
       <div class="random-title">Reveal a Random Verse</div>
@@ -448,15 +511,12 @@
     </button>
   </div>
 
-  <!-- Empty state -->
   <div id="empty-state">
     <div class="empty-icon">☽</div>
-    <p class="empty-text">Your collection is empty.<br>Add a Quranic verse above to begin.</p>
+    <p class="empty-text">The shared collection is empty.<br>Be the first to add a Quranic verse above.</p>
   </div>
-
 </div>
 
-<!-- Modal -->
 <div id="modal-overlay" onclick="closeModal(event)">
   <div id="modal-box">
     <button id="modal-close" onclick="closeModalBtn()">✕</button>
@@ -466,190 +526,327 @@
 </div>
 
 <script>
-  /* ── State ── */
-  const entries = [];   // { id, verse, addedAt }
+/* ================================================================
+   STORAGE KEY — all verses live under this shared key
+   ================================================================ */
+const STORAGE_KEY = 'quran-verses-shared-v1';
 
-  /* ── Stars ── */
-  (function buildStars() {
-    const container = document.getElementById('stars');
-    for (let i = 0; i < 44; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      const size = Math.random() * 2 + 0.5;
-      s.style.cssText = `
-        left:${Math.random()*100}%;
-        top:${Math.random()*100}%;
-        width:${size}px; height:${size}px;
-        opacity:${Math.random()*0.5+0.1};
-        animation-delay:${Math.random()*4}s;
-        animation-duration:${2.5+Math.random()*2}s;
-      `;
-      container.appendChild(s);
-    }
-  })();
+/* In-memory list. Each entry: { id, verse, addedAt } */
+let entries = [];
 
-  /* ── Translation via MyMemory (free, no API key, works on GitHub Pages) ── */
-  async function translateVerse(verse, language) {
-    // MyMemory API: free, no signup, no key required
-    // Supports ar→en and ar→ur out of the box
-    const targetLang = language === 'urdu' ? 'ur' : 'en';
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(verse)}&langpair=ar|${targetLang}`;
+/* Translation cache: key = `${id}-${lang}` → translated string */
+const translationCache = {};
 
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+/* ── Stars ── */
+(function buildStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 44; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    s.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      opacity:${Math.random()*0.5+0.1};
+      animation-delay:${Math.random()*4}s;
+      animation-duration:${2.5+Math.random()*2}s;
+    `;
+    container.appendChild(s);
+  }
+})();
 
-      // responseStatus 200 = success; 429 = daily limit hit
-      if (data.responseStatus === 429) {
-        return '⚠️ Daily translation limit reached. Please try again tomorrow.';
+/* ================================================================
+   STORAGE — load & save (shared = true so all users share data)
+   ================================================================ */
+async function loadFromStorage() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY, true);
+    if (result && result.value) {
+      const parsed = JSON.parse(result.value);
+      if (Array.isArray(parsed)) {
+        entries = parsed;
       }
-      if (data.responseStatus !== 200) {
-        return `⚠️ Translation error: ${data.responseDetails || 'Unknown error'}`;
-      }
-
-      const text = data.responseData?.translatedText?.trim();
-      return text || 'Translation unavailable.';
-    } catch (e) {
-      return `⚠️ Network error: ${e.message}`;
     }
+    setStorageStatus('ok', 'Shared collection live');
+  } catch (e) {
+    setStorageStatus('err', 'Storage unavailable');
+    console.warn('Storage load error:', e);
+  }
+}
+
+async function saveToStorage() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(entries), true);
+  } catch (e) {
+    setStorageStatus('err', 'Could not save');
+    console.warn('Storage save error:', e);
+  }
+}
+
+function setStorageStatus(state, label) {
+  const dot = document.getElementById('storage-dot');
+  const lbl = document.getElementById('storage-label');
+  dot.className = state;
+  lbl.textContent = label;
+}
+
+/* ================================================================
+   TRANSLATION — uses Claude API directly (reliable on all devices)
+   ================================================================ */
+async function translateVerse(verseText, language, cacheKey) {
+  /* Check in-memory cache first */
+  if (translationCache[cacheKey]) {
+    return translationCache[cacheKey];
   }
 
-  /* ── Build a verse card DOM element ── */
-  function buildCard(entry, isRecent) {
-    const card = document.createElement('div');
-    card.className = 'verse-card' + (isRecent ? ' recent' : '');
-    card.dataset.id = entry.id;
+  const targetLanguage = language === 'urdu' ? 'Urdu' : 'English';
+  const systemPrompt = `You are an expert in Quranic Arabic. Your sole task is to translate Quranic verses.
+When given an Arabic Quranic verse, respond ONLY with the translation in ${targetLanguage}.
+Do NOT include:
+- Any Arabic text
+- Transliteration
+- Surah/verse references
+- Explanation or commentary
+- Quotation marks
+- Any prefix like "Translation:" or "The verse means:"
+Respond with ONLY the translated text in ${targetLanguage}, nothing else.`;
 
-    const time = new Date(entry.addedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    card.innerHTML = `
-      <div class="card-glow"></div>
-      <p class="arabic-text">${escHtml(entry.verse)}</p>
-      <div class="divider">
-        <div class="divider-line l"></div>
-        <div class="divider-gem">✦</div>
-        <div class="divider-line r"></div>
-      </div>
-      <div class="lang-btns">
-        <button class="lang-btn" data-lang="english">English</button>
-        <button class="lang-btn" data-lang="urdu">اردو</button>
-      </div>
-      <div class="translation-area" style="display:none;"></div>
-      <div class="card-time">${time}</div>
-    `;
-
-    let activeLang = null;
-
-    card.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const lang = btn.dataset.lang;
-
-        if (activeLang === lang) {
-          activeLang = null;
-          card.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-          card.querySelector('.translation-area').style.display = 'none';
-          card.querySelector('.translation-area').innerHTML = '';
-          return;
-        }
-
-        activeLang = lang;
-        card.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const area = card.querySelector('.translation-area');
-        area.style.display = 'block';
-        area.innerHTML = '<p class="translating-msg">Translating…</p>';
-
-        const text = await translateVerse(entry.verse, lang);
-        const cls = lang === 'urdu' ? 'translation-text urdu' : 'translation-text';
-        area.innerHTML = `<p class="${cls}">${escHtml(text)}</p>`;
-      });
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [
+          {
+            role: 'user',
+            content: `Translate this Quranic verse into ${targetLanguage}:\n\n${verseText}`
+          }
+        ]
+      })
     });
 
-    return card;
-  }
-
-  /* ── Add verse ── */
-  function addVerse() {
-    const input = document.getElementById('verse-input');
-    const errorEl = document.getElementById('error-msg');
-    const verse = input.value.trim();
-
-    if (!verse) {
-      errorEl.textContent = 'Please paste a Quranic verse first.';
-      errorEl.style.display = 'block';
-      return;
-    }
-    errorEl.style.display = 'none';
-
-    const entry = { id: Date.now(), verse, addedAt: Date.now() };
-    entries.push(entry);
-    input.value = '';
-    renderAll();
-  }
-
-  /* ── Render everything ── */
-  function renderAll() {
-    const now = Date.now();
-    const recent  = entries.filter(e => now - e.addedAt <  7 * 60 * 1000);
-    const archive = entries.filter(e => now - e.addedAt >= 7 * 60 * 1000);
-
-    // Empty state
-    document.getElementById('empty-state').style.display = entries.length === 0 ? 'block' : 'none';
-
-    // Recent section
-    const recentSection = document.getElementById('recent-section');
-    const recentList = document.getElementById('recent-list');
-    if (recent.length > 0) {
-      recentSection.style.display = 'block';
-      recentList.innerHTML = '';
-      [...recent].reverse().forEach(e => recentList.appendChild(buildCard(e, true)));
-    } else {
-      recentSection.style.display = 'none';
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error('API error:', response.status, errBody);
+      return `⚠️ Translation service error (${response.status}). Please try again.`;
     }
 
-    // Random button
-    const all = entries;
-    const randomSection = document.getElementById('random-section');
-    if (all.length > 0) {
-      randomSection.style.display = 'block';
-      const count = all.length;
-      document.getElementById('random-count').textContent =
-        `${count} verse${count !== 1 ? 's' : ''} in your collection · click to open one`;
-    } else {
-      randomSection.style.display = 'none';
+    const data = await response.json();
+    const textBlocks = (data.content || []).filter(b => b.type === 'text');
+    const translated = textBlocks.map(b => b.text).join('').trim();
+
+    if (!translated) {
+      return '⚠️ Empty translation received. Please try again.';
     }
+
+    translationCache[cacheKey] = translated;
+    return translated;
+
+  } catch (err) {
+    console.error('Translation fetch error:', err);
+    return `⚠️ Network error: ${err.message}`;
+  }
+}
+
+/* ================================================================
+   BUILD CARD
+   ================================================================ */
+function buildCard(entry, isRecent) {
+  const card = document.createElement('div');
+  card.className = 'verse-card' + (isRecent ? ' recent' : '');
+  card.dataset.id = entry.id;
+
+  const time = new Date(entry.addedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  card.innerHTML = `
+    <div class="card-glow"></div>
+    <p class="arabic-text">${escHtml(entry.verse)}</p>
+    <div class="divider">
+      <div class="divider-line l"></div>
+      <div class="divider-gem">✦</div>
+      <div class="divider-line r"></div>
+    </div>
+    <div class="lang-btns">
+      <button class="lang-btn" data-lang="english">English</button>
+      <button class="lang-btn" data-lang="urdu">اردو</button>
+    </div>
+    <div class="translation-area" style="display:none;"></div>
+    <div class="card-time">${time}</div>
+  `;
+
+  let activeLang = null;
+  const allBtns = card.querySelectorAll('.lang-btn');
+  const area = card.querySelector('.translation-area');
+
+  allBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const lang = btn.dataset.lang;
+
+      /* Toggle off if same language clicked again */
+      if (activeLang === lang) {
+        activeLang = null;
+        allBtns.forEach(b => { b.classList.remove('active'); b.disabled = false; });
+        area.style.display = 'none';
+        area.innerHTML = '';
+        return;
+      }
+
+      /* Disable both buttons while translating */
+      allBtns.forEach(b => { b.disabled = true; b.classList.remove('active'); });
+      activeLang = lang;
+      btn.classList.add('active');
+
+      area.style.display = 'block';
+      area.innerHTML = `
+        <p class="translating-msg">
+          <span class="spinner"></span>
+          Translating…
+        </p>
+      `;
+
+      const cacheKey = `${entry.id}-${lang}`;
+      const translated = await translateVerse(entry.verse, lang, cacheKey);
+
+      /* Re-enable buttons after translation */
+      allBtns.forEach(b => { b.disabled = false; });
+
+      /* If user toggled away while loading, don't overwrite */
+      if (activeLang !== lang) return;
+
+      const cls = lang === 'urdu' ? 'translation-text urdu' : 'translation-text';
+      area.innerHTML = `<p class="${cls}">${escHtml(translated)}</p>`;
+    });
+  });
+
+  return card;
+}
+
+/* ================================================================
+   ADD VERSE
+   ================================================================ */
+async function addVerse() {
+  const input = document.getElementById('verse-input');
+  const errorEl = document.getElementById('error-msg');
+  const btn = document.getElementById('add-btn');
+  const verse = input.value.trim();
+
+  if (!verse) {
+    errorEl.textContent = 'Please paste a Quranic verse first.';
+    errorEl.style.display = 'block';
+    return;
   }
 
-  /* ── Periodic re-render to move recent → archive ── */
-  setInterval(renderAll, 15000);
-
-  /* ── Random modal ── */
-  function openRandom() {
-    if (entries.length === 0) return;
-    const entry = entries[Math.floor(Math.random() * entries.length)];
-    const container = document.getElementById('modal-card-container');
-    container.innerHTML = '';
-    container.appendChild(buildCard(entry, false));
-    document.getElementById('modal-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+  /* Basic check: Arabic text should contain Arabic Unicode characters */
+  const arabicRegex = /[\u0600-\u06FF]/;
+  if (!arabicRegex.test(verse)) {
+    errorEl.textContent = 'Please enter an Arabic Quranic verse (Arabic script required).';
+    errorEl.style.display = 'block';
+    return;
   }
 
-  function closeModal(e) {
-    if (e.target === document.getElementById('modal-overlay')) closeModalBtn();
-  }
-  function closeModalBtn() {
-    document.getElementById('modal-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
 
-  /* ── Helpers ── */
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const entry = { id: Date.now(), verse, addedAt: Date.now() };
+  entries.push(entry);
+
+  await saveToStorage();
+
+  input.value = '';
+  btn.disabled = false;
+  btn.textContent = 'Add Verse →';
+
+  renderAll();
+}
+
+/* ================================================================
+   RENDER
+   ================================================================ */
+function renderAll() {
+  const now = Date.now();
+  const recent  = entries.filter(e => now - e.addedAt < 7 * 60 * 1000);
+  const allCount = entries.length;
+
+  document.getElementById('empty-state').style.display = allCount === 0 ? 'block' : 'none';
+
+  const recentSection = document.getElementById('recent-section');
+  const recentList    = document.getElementById('recent-list');
+  if (recent.length > 0) {
+    recentSection.style.display = 'block';
+    recentList.innerHTML = '';
+    [...recent].reverse().forEach(e => recentList.appendChild(buildCard(e, true)));
+  } else {
+    recentSection.style.display = 'none';
   }
+
+  const randomSection = document.getElementById('random-section');
+  if (allCount > 0) {
+    randomSection.style.display = 'block';
+    document.getElementById('random-count').textContent =
+      `${allCount} verse${allCount !== 1 ? 's' : ''} in the shared collection · click to open one`;
+  } else {
+    randomSection.style.display = 'none';
+  }
+}
+
+/* Refresh every 15 seconds so recently-added by others appear */
+setInterval(async () => {
+  await loadFromStorage();
+  renderAll();
+}, 15000);
+
+/* ================================================================
+   RANDOM MODAL
+   ================================================================ */
+function openRandom() {
+  if (entries.length === 0) return;
+  const entry = entries[Math.floor(Math.random() * entries.length)];
+  const container = document.getElementById('modal-card-container');
+  container.innerHTML = '';
+  container.appendChild(buildCard(entry, false));
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalBtn();
+}
+function closeModalBtn() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+
+/* ================================================================
+   HELPERS
+   ================================================================ */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ================================================================
+   INIT — load data, then reveal UI
+   ================================================================ */
+async function init() {
+  await loadFromStorage();
+  renderAll();
+
+  const overlay = document.getElementById('loading-overlay');
+  overlay.classList.add('hidden');
+  setTimeout(() => { overlay.style.display = 'none'; }, 500);
+}
+
+init();
 </script>
 </body>
 </html>
